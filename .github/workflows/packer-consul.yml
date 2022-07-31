@@ -75,6 +75,14 @@ jobs:
   
   Terraform:
     needs: [Build]
-    if: ${{ (github.event_name == 'push') && always() }}
     uses: ./.github/workflows/terraform.yml
+    secrets:
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_REGION: "us-east-1"
+      CONSUL_HTTP_ADDR: ${{ secrets.CONSUL_HTTP_ADDR }}
+      CONSUL_HTTP_TOKEN: ${{ secrets.CONSUL_HTTP_TOKEN }}
+      HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+      HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+
         
