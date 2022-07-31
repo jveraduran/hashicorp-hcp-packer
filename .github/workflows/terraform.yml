@@ -1,11 +1,6 @@
 name: "Terraform AWS"
 
 on:
-  push:
-    branches: [develop, staging, master]
-  pull_request: 
-    branches: [develop, staging, master]
-    types: [opened, synchronize]
   workflow_call:
     secrets:
       TERRAFORM_API:
@@ -57,7 +52,7 @@ jobs:
           output_format: json
 
   Apply:
-    name: Terraform
+    name: Apply
     runs-on: ubuntu-latest
     steps:
       - name: ⬇️ Checkout repo
