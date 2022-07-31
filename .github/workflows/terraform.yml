@@ -53,6 +53,7 @@ jobs:
 
   Apply:
     name: Apply
+    if: ${{ (github.event_name == 'push') && always() }}
     runs-on: ubuntu-latest
     steps:
       - name: ⬇️ Checkout repo
@@ -143,7 +144,7 @@ jobs:
         run: exit 1
 
       - name: 🚀 Terraform Apply
-        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/master' && (github.event_name == 'push')
+        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         run: terraform -chdir=aws/infrastructure apply
         env:
           TF_WORKSPACE: ${{ env.ENV }}
