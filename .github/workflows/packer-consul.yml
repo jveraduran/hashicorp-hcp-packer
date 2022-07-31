@@ -73,6 +73,12 @@ jobs:
           APP_ENV: ${{ env.ENV }}
           HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
-
+  
+  Terraform:
+    needs: [Init]
+    if: ${{ (github.event_name == 'push') && always() }}
+    runs-on: ubuntu-latest
+    name: Terraform
+    steps:
       - name: Terraform Job
         uses: ./.github/workflows/terraform.yml
