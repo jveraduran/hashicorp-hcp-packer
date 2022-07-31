@@ -74,7 +74,8 @@ jobs:
           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
   
   Terraform:
-    needs: [Build]
+    needs: [Validate]
+    if: ${{ always() }}
     uses: ./.github/workflows/terraform.yml
     secrets:
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
