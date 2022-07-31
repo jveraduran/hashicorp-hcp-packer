@@ -75,6 +75,7 @@ jobs:
   
   Terraform:
     needs: [Build]
+    if: ${{ (github.event_name == 'push') && success() }}
     uses: ./.github/workflows/terraform.yml
     secrets:
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
