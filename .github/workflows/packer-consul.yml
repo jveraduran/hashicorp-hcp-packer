@@ -75,7 +75,6 @@ jobs:
   
   Terraform:
     needs: [Build]
-    if: ${{ always() }}
     uses: ./.github/workflows/terraform.yml
     secrets:
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
