@@ -8,10 +8,10 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  Validate:
+  Validate-Packer:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    name: Validate
+    name: Validate-Packer
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -23,8 +23,13 @@ jobs:
           arguments: -syntax-only
           target: aws/packer-consul.json.pkr.hcl
 
+  Validate-Terraform:
+    if: github.event_name == 'pull_request'
+    name: Validate-Terraform
+    uses: ./.github/workflows/terraform.yml
+
   Build:
-    needs: [Validate]
+    needs: [Validate-Packer]
     if: ${{ (github.event_name == 'push') && always() }}
     runs-on: ubuntu-latest
     name: Build
@@ -74,7 +79,7 @@ jobs:
           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
   
   Terraform:
-    needs: [Validate,Build]
+    needs: [Validate-Terraform,Build]
     uses: ./.github/workflows/terraform.yml
     secrets:
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
