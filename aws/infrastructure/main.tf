@@ -16,5 +16,6 @@ resource "aws_instance" "ubuntu" {
   tags = {
     Name = "HCP-Packer"
     CECO = "O123"
+    SystemInfo = "HCP-Packer"
   }
 }
