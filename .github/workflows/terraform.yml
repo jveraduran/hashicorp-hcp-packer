@@ -1,4 +1,4 @@
-name: "Terraform AWS"
+name: "Terraform"
 
 on:
   push:
@@ -73,12 +73,12 @@ jobs:
           cat >> aws/infrastructure/pipeline.auto.tfvars<<EOF
           hcp_client_id         = "$HCP_CLIENT_ID"
           hcp_client_secret     = "$HCP_CLIENT_SECRET"
-          aws_access_key        = "$AWS_ACCESS_KEY"
-          aws_secret_key        = "$AWS_SECRET_ACCESS"
+          aws_access_key        = "$AWS_ACCESS_KEY_ID"
+          aws_secret_key        = "$AWS_SECRET_ACCESS_KEY"
           EOF
         env: 
-          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
 
@@ -87,8 +87,8 @@ jobs:
         run: terraform -chdir=aws/infrastructure plan -no-color
         env:
           TF_WORKSPACE: ${{ env.ENV }}
-          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
         continue-on-error: true
@@ -125,7 +125,7 @@ jobs:
         run: terraform -chdir=aws/infrastructure apply
         env:
           TF_WORKSPACE: ${{ env.ENV }}
-          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
