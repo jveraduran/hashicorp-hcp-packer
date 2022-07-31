@@ -14,6 +14,18 @@ on:
       PAT_GITHUB_RW_REPOS:
         description: "GITHUB Token"
         required: true
+      AWS_ACCESS_KEY_ID:
+        description: "GITHUB Token"
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: "GITHUB Token"
+        required: true
+      HCP_CLIENT_ID:
+        description: "GITHUB Token"
+        required: true
+      HCP_CLIENT_SECRET:
+        description: "GITHUB Token"
+        required: true
 
 jobs:
   Validate:
