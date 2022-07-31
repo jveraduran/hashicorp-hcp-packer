@@ -51,7 +51,7 @@ variable "consul_http_token" {
 }
 # https://www.packer.io/docs/templates/hcl_templates/functions/contextual/consul
 locals {
-  ami_name      = consul_key(join("/",["polymathes/temporal",var.app_env,"packer/ami-name"]))
+  ami_name      = consul_key(join("/", ["polymathes/temporal", var.app_env, "packer/ami-name"]))
   ssh_username  = consul_key("polymathes/temporal/packer/ssh-username")
   source_ami    = consul_key("polymathes/temporal/packer/source-ami")
   instance_type = consul_key("polymathes/temporal/packer/instance-type")
@@ -64,7 +64,7 @@ locals {
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "ami" {
   access_key            = var.aws_access_key
-  ami_name              = join("-",[local.ami_name,var.version])
+  ami_name              = join("-", [local.ami_name, var.version])
   force_delete_snapshot = true
   instance_type         = local.instance_type
   region                = var.region
@@ -102,14 +102,14 @@ Some nice description about the image being published to HCP Packer Registry.
     "source.amazon-ebs.ami"
   ]
 
-# details about provisioner in the documentation
-# https://www.packer.io/docs/provisioners/shell
+  # details about provisioner in the documentation
+  # https://www.packer.io/docs/provisioners/shell
   provisioner "shell" {
     inline = ["mkdir ~/ssh-conf"]
   }
 
-# details about provisioner in the documentation
-# https://www.packer.io/docs/provisioners/file
+  # details about provisioner in the documentation
+  # https://www.packer.io/docs/provisioners/file
   provisioner "file" {
     source      = "./aws/ssh/ssh_config"
     destination = "~/ssh-conf/ssh_config"
