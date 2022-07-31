@@ -6,7 +6,6 @@ on:
   pull_request: 
     branches: [develop, staging, master]
     types: [opened, synchronize]
-  workflow_call:
 
 jobs:
   Validate:
@@ -24,7 +23,7 @@ jobs:
           arguments: -syntax-only
           target: aws/packer-consul.json.pkr.hcl
 
-  Init:
+  Build:
     needs: [Validate]
     if: ${{ (github.event_name == 'push') && always() }}
     runs-on: ubuntu-latest
@@ -75,10 +74,7 @@ jobs:
           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
   
   Terraform:
-    needs: [Init]
+    needs: [Build]
     if: ${{ (github.event_name == 'push') && always() }}
-    runs-on: ubuntu-latest
-    name: Terraform
-    steps:
-      - name: Terraform Job
-        uses: ./.github/workflows/terraform.yml
+    uses: ./.github/workflows/terraform.yml
+        

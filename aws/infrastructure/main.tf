@@ -14,8 +14,8 @@ resource "aws_instance" "ubuntu" {
   ami           = data.hcp_packer_image.ubuntu.cloud_image_id
   instance_type = "t2.micro"
   tags = {
-    Name = "HCP-Packer"
-    CECO = "O123"
+    Name       = "HCP-Packer"
+    CECO       = "O123"
     SystemInfo = "HCP-Packer"
   }
 }
