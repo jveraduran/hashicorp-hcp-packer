@@ -26,6 +26,12 @@ on:
       HCP_CLIENT_SECRET:
         description: "GITHUB Token"
         required: true
+      AWS_ACCESS_KEY:
+        description: "GITHUB Token"
+        required: true
+      AWS_SECRET_KEY:
+        description: "GITHUB Token"
+        required: true
 
 jobs:
   Validate:
