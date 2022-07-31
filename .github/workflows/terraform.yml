@@ -52,7 +52,7 @@ jobs:
           output_format: json
 
   Apply:
-    name: Terraform
+    name: Apply
     runs-on: ubuntu-latest
     steps:
       - name: ⬇️ Checkout repo
