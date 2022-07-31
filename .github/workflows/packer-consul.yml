@@ -11,7 +11,7 @@ jobs:
   Validate-Packer:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    name: Validate
+    name: Validate-Packer
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -25,14 +25,8 @@ jobs:
 
   Validate-Terraform:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    name: Validate
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      
-      - name: Validate Terraform 
-        uses: ./.github/workflows/terraform.yml
+    name: Validate-Terraform
+    uses: ./.github/workflows/terraform.yml
 
   Build:
     needs: [Validate-Packer]
