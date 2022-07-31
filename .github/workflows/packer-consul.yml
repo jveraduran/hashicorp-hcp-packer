@@ -22,6 +22,9 @@ jobs:
           command: validate
           arguments: -syntax-only
           target: aws/packer-consul.json.pkr.hcl
+      
+      - name: Validate Terraform 
+        uses: ./.github/workflows/terraform.yml
 
   Build:
     needs: [Validate]
