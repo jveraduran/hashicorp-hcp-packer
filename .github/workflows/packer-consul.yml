@@ -27,7 +27,7 @@ jobs:
     needs: [Validate]
     if: ${{ (github.event_name == 'push') && always() }}
     runs-on: ubuntu-latest
-    name: Init
+    name: Build
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
