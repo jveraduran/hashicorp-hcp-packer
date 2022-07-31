@@ -53,6 +53,7 @@ jobs:
 
   Apply:
     name: Apply
+    if: ${{ (github.event_name == 'push') && always() }}
     runs-on: ubuntu-latest
     steps:
       - name: ⬇️ Checkout repo
