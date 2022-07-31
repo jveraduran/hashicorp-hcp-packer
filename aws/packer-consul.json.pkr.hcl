@@ -111,7 +111,7 @@ Some nice description about the image being published to HCP Packer Registry.
 # details about provisioner in the documentation
 # https://www.packer.io/docs/provisioners/file
   provisioner "file" {
-    source      = "./ssh/ssh_config"
+    source      = "./aws/ssh/ssh_config"
     destination = "~/ssh-conf/ssh_config"
   }
 }
