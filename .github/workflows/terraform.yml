@@ -1,4 +1,4 @@
-name: "Terraform"
+name: "Terraform AWS"
 
 on:
   push:
@@ -7,6 +7,13 @@ on:
     branches: [develop, staging, master]
     types: [opened, synchronize]
   workflow_call:
+    secrets:
+      TERRAFORM_API:
+        description: "Terraform Enterprise Secret"
+        required: true
+      PAT_GITHUB_RW_REPOS:
+        description: "GITHUB Token"
+        required: true
 
 jobs:
   Validate:
@@ -31,7 +38,7 @@ jobs:
           framework: terraform
           output_format: json
 
-  Terraform:
+  Apply:
     name: Terraform
     runs-on: ubuntu-latest
     steps:
