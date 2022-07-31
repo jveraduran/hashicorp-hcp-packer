@@ -70,7 +70,7 @@ jobs:
       - name: Terraform - Setup Custom variables
         id: vars
         run: |
-          cat >> infraestructure/pipeline.auto.tfvars<<EOF
+          cat >> aws/infrastructure/pipeline.auto.tfvars<<EOF
           hcp_client_id         = "$HCP_CLIENT_ID"
           hcp_client_secret     = "$HCP_CLIENT_SECRET"
           aws_access_key        = "$AWS_ACCESS_KEY_ID"
