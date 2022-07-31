@@ -1,7 +1,31 @@
-name: "Terraform"
+name: "Terraform AWS"
 
 on:
+  push:
+    branches: [develop, staging, master]
+  pull_request: 
+    branches: [develop, staging, master]
+    types: [opened, synchronize]
   workflow_call:
+    secrets:
+      TERRAFORM_API:
+        description: "Terraform Enterprise Secret"
+        required: true
+      PAT_GITHUB_RW_REPOS:
+        description: "GITHUB Token"
+        required: true
+      AWS_ACCESS_KEY_ID:
+        description: "GITHUB Token"
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: "GITHUB Token"
+        required: true
+      HCP_CLIENT_ID:
+        description: "GITHUB Token"
+        required: true
+      HCP_CLIENT_SECRET:
+        description: "GITHUB Token"
+        required: true
 
 jobs:
   Validate:
@@ -26,7 +50,7 @@ jobs:
           framework: terraform
           output_format: json
 
-  Terraform:
+  Apply:
     name: Terraform
     runs-on: ubuntu-latest
     steps:
