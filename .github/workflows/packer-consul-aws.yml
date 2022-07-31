@@ -111,7 +111,6 @@ jobs:
   
   Terraform-Build:
     needs: [Validate-Terraform,Build]
-    if: ${{ (github.event_name == 'push') && always() }}
     name: Apply
     runs-on: ubuntu-latest
     steps:
