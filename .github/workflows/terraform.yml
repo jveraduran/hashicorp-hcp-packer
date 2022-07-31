@@ -1,154 +1,154 @@
-# name: "Terraform AWS"
+name: "Terraform AWS"
 
-# on:
-#   workflow_call:
-#     secrets:
-#       TERRAFORM_API:
-#         description: "Terraform Enterprise Secret"
-#         required: true
-#       PAT_GITHUB_RW_REPOS:
-#         description: "GITHUB Token"
-#         required: true
-#       AWS_ACCESS_KEY_ID:
-#         description: "GITHUB Token"
-#         required: true
-#       AWS_SECRET_ACCESS_KEY:
-#         description: "GITHUB Token"
-#         required: true
-#       HCP_CLIENT_ID:
-#         description: "GITHUB Token"
-#         required: true
-#       HCP_CLIENT_SECRET:
-#         description: "GITHUB Token"
-#         required: true
-#       AWS_ACCESS_KEY:
-#         description: "GITHUB Token"
-#         required: true
-#       AWS_SECRET_KEY:
-#         description: "GITHUB Token"
-#         required: true
+on:
+  workflow_call:
+    secrets:
+      TERRAFORM_API:
+        description: "Terraform Enterprise Secret"
+        required: true
+      PAT_GITHUB_RW_REPOS:
+        description: "GITHUB Token"
+        required: true
+      AWS_ACCESS_KEY_ID:
+        description: "GITHUB Token"
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: "GITHUB Token"
+        required: true
+      HCP_CLIENT_ID:
+        description: "GITHUB Token"
+        required: true
+      HCP_CLIENT_SECRET:
+        description: "GITHUB Token"
+        required: true
+      AWS_ACCESS_KEY:
+        description: "GITHUB Token"
+        required: true
+      AWS_SECRET_KEY:
+        description: "GITHUB Token"
+        required: true
 
-# jobs:
-#   Validate:
-#     if: github.event_name == 'pull_request'
-#     name: Validate
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: ⬇️ Checkout repo
-#         uses: actions/checkout@v2
+jobs:
+  Validate:
+    if: github.event_name == 'pull_request'
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v2
 
-#       - name: 📏 Terraform Format
-#         id: fmt
-#         run: terraform -chdir=aws/infrastructure fmt -check
+      - name: 📏 Terraform Format
+        id: fmt
+        run: terraform -chdir=aws/infrastructure fmt -check
 
-#       - name: 👮 Run Checkov
-#         id: checkov
-#         uses: bridgecrewio/checkov-action@master
-#         with:
-#           directory: .
-#           quiet: true
-#           soft_fail: true
-#           framework: terraform
-#           output_format: json
+      - name: 👮 Run Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          quiet: true
+          soft_fail: true
+          framework: terraform
+          output_format: json
 
-#   Apply:
-#     name: Apply
-#     if: ${{ (github.event_name == 'push') && always() }}
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: ⬇️ Checkout repo
-#         uses: actions/checkout@v2
+  Apply:
+    name: Apply
+    if: ${{ (github.event_name == 'push') && always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v2
 
-#       - name: 🎛️ Set ENV
-#         shell: bash
-#         run: |-
-#           if [ ${{ github.event_name }} = "pull_request" ]; then 
-#             branch=$(echo ${{ github.base_ref }}  | tr / -)
-#           else 
-#             branch=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
-#           fi
+      - name: 🎛️ Set ENV
+        shell: bash
+        run: |-
+          if [ ${{ github.event_name }} = "pull_request" ]; then 
+            branch=$(echo ${{ github.base_ref }}  | tr / -)
+          else 
+            branch=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+          fi
           
-#           if [ $branch = "master" ]; then 
-#             env="production"
-#           elif [ $branch = "staging" ]; then 
-#             env="staging"
-#           elif [ $branch = "develop" ]; then 
-#             env="develop"  
-#           else 
-#             echo "invalid environment"; exit -1
-#           fi
-#           echo "ENV=$(echo $env)" >> $GITHUB_ENV
+          if [ $branch = "master" ]; then 
+            env="production"
+          elif [ $branch = "staging" ]; then 
+            env="staging"
+          elif [ $branch = "develop" ]; then 
+            env="develop"  
+          else 
+            echo "invalid environment"; exit -1
+          fi
+          echo "ENV=$(echo $env)" >> $GITHUB_ENV
 
-#       - name: 🛰️ Setup Terraform
-#         uses: hashicorp/setup-terraform@v1
-#         with:
-#           cli_config_credentials_token: ${{ secrets.TERRAFORM_API }}
+      - name: 🛰️ Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_API }}
 
-#       - name: 🎬 Terraform Init
-#         id: init
-#         run: terraform -chdir=aws/infrastructure init
-#         env:
-#           TF_WORKSPACE: ${{ env.ENV }}
+      - name: 🎬 Terraform Init
+        id: init
+        run: terraform -chdir=aws/infrastructure init
+        env:
+          TF_WORKSPACE: ${{ env.ENV }}
       
-#       - name: Terraform - Setup Custom variables
-#         id: vars
-#         run: |
-#           cat >> aws/infrastructure/pipeline.auto.tfvars<<EOF
-#           hcp_client_id         = "$HCP_CLIENT_ID"
-#           hcp_client_secret     = "$HCP_CLIENT_SECRET"
-#           aws_access_key        = "$AWS_ACCESS_KEY_ID"
-#           aws_secret_key        = "$AWS_SECRET_ACCESS_KEY"
-#           EOF
-#         env: 
-#           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
-#           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+      - name: Terraform - Setup Custom variables
+        id: vars
+        run: |
+          cat >> aws/infrastructure/pipeline.auto.tfvars<<EOF
+          hcp_client_id         = "$HCP_CLIENT_ID"
+          hcp_client_secret     = "$HCP_CLIENT_SECRET"
+          aws_access_key        = "$AWS_ACCESS_KEY_ID"
+          aws_secret_key        = "$AWS_SECRET_ACCESS_KEY"
+          EOF
+        env: 
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+          HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
 
-#       - name: 🏗️ Terraform Plan
-#         id: plan
-#         run: terraform -chdir=aws/infrastructure plan -no-color
-#         env:
-#           TF_WORKSPACE: ${{ env.ENV }}
-#           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
-#           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
-#         continue-on-error: true
+      - name: 🏗️ Terraform Plan
+        id: plan
+        run: terraform -chdir=aws/infrastructure plan -no-color
+        env:
+          TF_WORKSPACE: ${{ env.ENV }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+          HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+        continue-on-error: true
 
-#       # - name: 🐾 Output Plan
-#       #   uses: actions/github-script@0.9.0
-#       #   if: github.event_name == 'pull_request'
-#       #   env:
-#       #     PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-#       #   with:
-#       #     github-token: ${{ secrets.PAT_GITHUB_RW_REPOS }}
-#       #     script: |
-#       #       const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-#       #       #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-#       #       #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-#       #       <details><summary>Show Plan</summary>
-#       #       \`\`\`${process.env.PLAN}\`\`\`
-#       #       </details>
-#       #       *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+      # - name: 🐾 Output Plan
+      #   uses: actions/github-script@0.9.0
+      #   if: github.event_name == 'pull_request'
+      #   env:
+      #     PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      #   with:
+      #     github-token: ${{ secrets.PAT_GITHUB_RW_REPOS }}
+      #     script: |
+      #       const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+      #       #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+      #       #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+      #       <details><summary>Show Plan</summary>
+      #       \`\`\`${process.env.PLAN}\`\`\`
+      #       </details>
+      #       *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
               
-#       #       github.issues.createComment({
-#       #         issue_number: context.issue.number,
-#       #         owner: context.repo.owner,
-#       #         repo: context.repo.repo,
-#       #         body: output
-#       #       })
+      #       github.issues.createComment({
+      #         issue_number: context.issue.number,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: output
+      #       })
 
-#       - name: ✅ Terraform Plan Status
-#         if: steps.plan.outcome == 'failure'
-#         run: exit 1
+      - name: ✅ Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
 
-#       - name: 🚀 Terraform Apply
-#         if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-#         run: terraform -chdir=aws/infrastructure apply
-#         env:
-#           TF_WORKSPACE: ${{ env.ENV }}
-#           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
-#           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+      - name: 🚀 Terraform Apply
+        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        run: terraform -chdir=aws/infrastructure apply
+        env:
+          TF_WORKSPACE: ${{ env.ENV }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+          HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
