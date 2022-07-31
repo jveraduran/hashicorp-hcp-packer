@@ -100,9 +100,10 @@ jobs:
           arguments: "-color=false -on-error=abort -force -var version=${{ github.run_number }}"
           target: azure/packer-consul.json.pkr.hcl
         env:
-          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
-          AWS_REGION: "us-east-1"
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           CONSUL_HTTP_ADDR: ${{ secrets.CONSUL_HTTP_ADDR }}
           CONSUL_HTTP_TOKEN: ${{ secrets.CONSUL_HTTP_TOKEN }}
           APP_ENV: ${{ env.ENV }}
