@@ -87,7 +87,10 @@ jobs:
         run: terraform -chdir=aws/infrastructure plan -no-color
         env:
           TF_WORKSPACE: ${{ env.ENV }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+          HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
         continue-on-error: true
 
       - name: 🐾 Output Plan
