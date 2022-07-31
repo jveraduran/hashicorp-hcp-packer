@@ -1,4 +1,4 @@
-name: Packer Consul
+name: Packer Consul AWS
 
 on:
   push:
@@ -21,6 +21,20 @@ jobs:
         with:
           command: validate
           arguments: -syntax-only
+          target: aws/packer-consul.json.pkr.hcl
+  
+  Format-Packer:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    name: Format-Packer
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Validate Template
+        uses: jveraduran/packer-github-actions@master
+        with:
+          command: fmt
           target: aws/packer-consul.json.pkr.hcl
 
   Validate-Terraform:
@@ -46,7 +60,7 @@ jobs:
           output_format: json
 
   Build:
-    needs: [Validate-Packer]
+    needs: [Validate-Packer,Format-Packer]
     if: ${{ (github.event_name == 'push') && always() }}
     runs-on: ubuntu-latest
     name: Build

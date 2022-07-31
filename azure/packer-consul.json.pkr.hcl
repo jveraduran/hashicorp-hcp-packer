@@ -15,19 +15,24 @@
 # views them; you can change their type later on. Read the variables type
 # constraints documentation
 # https://www.packer.io/docs/templates/hcl_templates/variables#type-constraints for more info.
-variable "aws_access_key" {
+variable "subscription_id" {
   type    = string
-  default = env("AWS_ACCESS_KEY")
+  default = env("AZURE_SUBSCRIPTION_ID")
 }
 
-variable "aws_secret_key" {
+variable "client_id" {
   type    = string
-  default = env("AWS_SECRET_KEY")
+  default = env("AZURE_CLIENT_ID")
 }
 
-variable "region" {
+variable "tenant_id" {
   type    = string
-  default = env("AWS_REGION")
+  default = env("AZURE_TENANT_ID")
+}
+
+variable "client_secret" {
+  type    = string
+  default = env("AZURE_CLIENT_SECRET")
 }
 
 variable "app_env" {
@@ -51,7 +56,7 @@ variable "consul_http_token" {
 }
 # https://www.packer.io/docs/templates/hcl_templates/functions/contextual/consul
 locals {
-  ami_name      = consul_key(join("/",["polymathes/temporal",var.app_env,"packer/ami-name"]))
+  ami_name      = consul_key(join("/", ["polymathes/temporal", var.app_env, "packer/ami-name"]))
   ssh_username  = consul_key("polymathes/temporal/packer/ssh-username")
   source_ami    = consul_key("polymathes/temporal/packer/source-ami")
   instance_type = consul_key("polymathes/temporal/packer/instance-type")
@@ -61,17 +66,27 @@ locals {
 # build blocks. A build block runs provisioner and post-processors on a
 # source. Read the documentation for source blocks here:
 # https://www.packer.io/docs/templates/hcl_templates/blocks/source
-# https://www.packer.io/plugins/builders/amazon/ebs
-source "amazon-ebs" "ami" {
-  access_key            = var.aws_access_key
-  ami_name              = join("-",[local.ami_name,var.version])
-  force_delete_snapshot = true
-  instance_type         = local.instance_type
-  region                = var.region
-  secret_key            = var.aws_secret_key
-  source_ami            = local.source_ami
-  ssh_username          = local.ssh_username
-  tags = {
+# https://www.packer.io/plugins/builders/azure/arm
+source "azure-arm" "image" {
+  subscription_id     = var.subscription_id
+  tenant_id           = var.tenant_id
+  client_secret       = var.client_secret
+  client_id           = var.client_id
+  resource_group_name = "cl-azure-network-prod"
+  storage_account     = "hashicorpacker"
+
+  capture_container_name = "images"
+  capture_name_prefix    = "packer"
+
+  os_type         = "Linux"
+  image_publisher = "Canonical"
+  image_offer     = "UbuntuServer"
+  image_sku       = "18.04-LTS"
+
+  location = "East US 2"
+  vm_size  = "Standard_D2S_v3"
+
+  azure_tags = {
     Name        = local.ami_name
     Environment = var.app_env
   }
@@ -82,7 +97,7 @@ source "amazon-ebs" "ami" {
 # https://www.packer.io/docs/templates/hcl_templates/blocks/build
 build {
   hcp_packer_registry {
-    bucket_name = "aws"
+    bucket_name = "azure"
     description = <<EOT
 Some nice description about the image being published to HCP Packer Registry.
     EOT
@@ -99,17 +114,17 @@ Some nice description about the image being published to HCP Packer Registry.
     }
   }
   sources = [
-    "source.amazon-ebs.ami"
+    "source.azure-arm.image"
   ]
 
-# details about provisioner in the documentation
-# https://www.packer.io/docs/provisioners/shell
+  # details about provisioner in the documentation
+  # https://www.packer.io/docs/provisioners/shell
   provisioner "shell" {
     inline = ["mkdir ~/ssh-conf"]
   }
 
-# details about provisioner in the documentation
-# https://www.packer.io/docs/provisioners/file
+  # details about provisioner in the documentation
+  # https://www.packer.io/docs/provisioners/file
   provisioner "file" {
     source      = "./aws/ssh/ssh_config"
     destination = "~/ssh-conf/ssh_config"
