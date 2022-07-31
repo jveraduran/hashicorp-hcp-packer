@@ -23,10 +23,10 @@ jobs:
           arguments: -syntax-only
           target: aws/packer-consul.json.pkr.hcl
 
-  Validate-Terraform:
-    if: github.event_name == 'pull_request'
-    name: Validate-Terraform
-    uses: ./.github/workflows/terraform.yml
+  # Validate-Terraform:
+  #   if: github.event_name == 'pull_request'
+  #   name: Validate-Terraform
+  #   uses: ./.github/workflows/terraform.yml
 
   # Build:
   #   needs: [Validate-Packer]
