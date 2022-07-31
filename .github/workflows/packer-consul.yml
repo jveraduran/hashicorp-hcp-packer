@@ -73,3 +73,6 @@ jobs:
           APP_ENV: ${{ env.ENV }}
           HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+
+      - name: Terraform Job
+        uses: ./.github/workflows/terraform.yml
