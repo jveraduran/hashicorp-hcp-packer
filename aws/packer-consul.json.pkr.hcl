@@ -71,6 +71,7 @@ source "amazon-ebs" "ami" {
   secret_key            = var.aws_secret_key
   source_ami            = local.source_ami
   ssh_username          = local.ssh_username
+  force_deregister      = true
   tags = {
     Name        = local.ami_name
     Environment = var.app_env
