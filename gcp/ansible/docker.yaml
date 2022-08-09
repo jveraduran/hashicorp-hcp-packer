@@ -1,0 +1,18 @@
+- hosts: "*"
+  become: yes
+  become_method: sudo
+  remote_user: ubuntu
+  tasks:
+  - name: Install docker engine
+    shell: curl https://releases.rancher.com/install-docker/19.03.sh | sh
+  - name: Add user to docker group
+    user:
+      name: ubuntu
+      groups: docker
+      append: yes
+  - name: Start docker service
+    systemd:
+      name: docker
+      state: started
+      enabled: True
+      daemon_reload: yes
