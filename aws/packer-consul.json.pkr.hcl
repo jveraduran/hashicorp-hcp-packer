@@ -101,17 +101,4 @@ Some nice description about the image being published to HCP Packer Registry.
   sources = [
     "source.amazon-ebs.ami"
   ]
-
-  # details about provisioner in the documentation
-  # https://www.packer.io/docs/provisioners/file
-  provisioner "file" {
-    source      = "./aws/prisma/twistcli-linux"
-    destination = "~/twistcli"
-  }
-
-  # details about provisioner in the documentation
-  # https://www.packer.io/docs/provisioners/shell
-  provisioner "shell" {
-    inline = ["chmod a+x ./twistcli"]
-  }
 }

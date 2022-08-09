@@ -116,25 +116,4 @@ Some nice description about the image being published to HCP Packer Registry.
   sources = [
     "source.azure-arm.image"
   ]
-
-  # details about provisioner in the documentation
-  # https://www.packer.io/docs/provisioners/shell
-  provisioner "shell" {
-    inline = [
-    "sudo apt update -y",
-    "sudo apt upgrade -y",
-    "sudo apt-get install curl apt-transport-https ca-certificates software-properties-common -y",
-    "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
-    <<EOT
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    EOT
-    ,
-    "sudo apt update -y",
-    "apt-cache policy docker-ce",
-    "sudo systemctl status docker"
-    // <<EOT
-    // curl -sSL  --header "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiY3ZlcmdhcmFlQHNtdS5jbCIsInJvbGUiOiJhZG1pbiIsImdyb3VwcyI6bnVsbCwicm9sZVBlcm1zIjpbWzI1NSwyNTUsMjU1LDI1NSwyNTUsMTI3LDFdLFsyNTUsMjU1LDI1NSwyNTUsMjU1LDEyNywxXV0sInNlc3Npb25UaW1lb3V0U2VjIjo1MTUsInNhYXNUb2tlbiI6ImV5SmhiR2NpT2lKSVV6STFOaUo5LmV5SnpkV0lpT2lKamRtVnlaMkZ5WVdWQWMyMTFMbU5zSWl3aWMyVnlkbWxqWlZWellXZGxUMjVzZVNJNmRISjFaU3dpWm1seWMzUk1iMmRwYmlJNlptRnNjMlVzSW5CeWFYTnRZVWxrSWpvaU9EVTJPVEkzTmprME16TTVNRGMzTVRJd0lpd2lhWEJCWkdSeVpYTnpJam9pTXpRdU56UXVPRFF1TlRFaUxDSnBjM01pT2lKb2RIUndjem92TDJGd2FUSXVjSEpwYzIxaFkyeHZkV1F1YVc4aUxDSnlaWE4wY21samRDSTZNQ3dpZFhObGNsSnZiR1ZVZVhCbFJHVjBZV2xzY3lJNmV5Sm9ZWE5QYm14NVVtVmhaRUZqWTJWemN5STZabUZzYzJWOUxDSjFjMlZ5VW05c1pWUjVjR1ZPWVcxbElqb2lVM2x6ZEdWdElFRmtiV2x1SWl3aWFYTlRVMDlUWlhOemFXOXVJanBtWVd4elpTd2liR0Z6ZEV4dloybHVWR2x0WlNJNk1UWTFPVFEzTWprNE9EWXpPU3dpWVhWa0lqb2lhSFIwY0hNNkx5OWhjR2t5TG5CeWFYTnRZV05zYjNWa0xtbHZJaXdpZFhObGNsSnZiR1ZVZVhCbFNXUWlPakVzSW5ObGJHVmpkR1ZrUTNWemRHOXRaWEpPWVcxbElqb2lVMjExSUZNdVlTNGdMU0F6TXpBNU16UTVNamd5TVRnd016WTVNRGd5SWl3aWMyVnpjMmx2YmxScGJXVnZkWFFpT2pNd0xDSjFjMlZ5VW05c1pVbGtJam9pTURZeVltUXlNbU10WkRrMFpDMDBZekkyTFdGbFlqUXRNemN4TldRMU0yTmxaak5oSWl3aWFHRnpSR1ZtWlc1a1pYSlFaWEp0YVhOemFXOXVjeUk2Wm1Gc2MyVXNJbVY0Y0NJNk1UWTFPVFEzTXpZeU5Dd2lhV0YwSWpveE5qVTVORGN6TURJMExDSjFjMlZ5Ym1GdFpTSTZJbU4yWlhKbllYSmhaVUJ6YlhVdVkyd2lMQ0oxYzJWeVVtOXNaVTVoYldVaU9pSlRlWE4wWlcwZ1FXUnRhVzRpZlEubFZjczJFVWtpOTdEUVV5RTRJYmo0UHhPNHhTTmFMWG5lVENMYVlSQ1NOUSIsImV4cCI6MTY1OTQ3NjcwOSwiaXNzIjoidHdpc3Rsb2NrIn0.k-zO18WRjoidM7fdg0tNBkji4ZXi5FAIuVW_OLwozRY" -X POST https://us-east1.cloud.twistlock.com/us-2-158315625/api/v1/scripts/defender.sh  | sudo bash -s -- -c "us-east1.cloud.twistlock.com" -d "none" -v
-    // EOT
-    ]
-  }
 }
