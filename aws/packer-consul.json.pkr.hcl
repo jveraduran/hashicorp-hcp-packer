@@ -71,7 +71,6 @@ source "amazon-ebs" "ami" {
   secret_key            = var.aws_secret_key
   source_ami            = local.source_ami
   ssh_username          = local.ssh_username
-  force_deregister      = true
   tags = {
     Name        = local.ami_name
     Environment = var.app_env
@@ -104,15 +103,15 @@ Some nice description about the image being published to HCP Packer Registry.
   ]
 
   # details about provisioner in the documentation
-  # https://www.packer.io/docs/provisioners/shell
-  provisioner "shell" {
-    inline = ["mkdir ~/ssh-conf"]
+  # https://www.packer.io/docs/provisioners/file
+  provisioner "file" {
+    source      = "./aws/prisma/twistcli-linux"
+    destination = "~/twistcli"
   }
 
   # details about provisioner in the documentation
-  # https://www.packer.io/docs/provisioners/file
-  provisioner "file" {
-    source      = "./aws/ssh/ssh_config"
-    destination = "~/ssh-conf/ssh_config"
+  # https://www.packer.io/docs/provisioners/shell
+  provisioner "shell" {
+    inline = ["chmod a+x ./twistcli"]
   }
 }
