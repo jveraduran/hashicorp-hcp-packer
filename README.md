@@ -180,7 +180,7 @@ jobs:
 
 For use this action, we must set up on [Github Encrypted Secrets](https://docs.github.com/en/enterprise-cloud@latest/actions/security-guides/encrypted-secrets) the ```AWS_ACCESS_KEY```, ```AWS_SECRET_KEY``` and ```AWS_REGION```for [AWS Provider](https://www.packer.io/plugins/builders/amazon#environment-variables). On Aditional, if you'll use [Consul KV](https://www.consul.io/commands#environment-variables), we must set up ```CONSUL_HTTP_ADDR```and ```CONSUL_HTTP_TOKEN```for [Consul Contextual Function](https://www.packer.io/docs/templates/hcl_templates/functions/contextual/consul). Finally, we must set up [HCP Packer Service Principal](https://cloud.hashicorp.com/docs/hcp/admin/service-principals) ```HCP_CLIENT_ID``` and ```HCP_CLIENT_SECRET```
 
-## HCP Packer with AWS 
+## HCP Packer with Azure
 
 Packer supports building Virtual Hard Disks (VHDs) and Managed Images in [Azure Resource Manager](https://azure.microsoft.com/en-us/documentation/articles/resource-group-overview/). Azure provides new users a [$200 credit for the first 30 days](https://azure.microsoft.com/en-us/free/); after which you will incur costs for VMs built and stored using Packer.
 
