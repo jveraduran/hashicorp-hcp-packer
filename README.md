@@ -180,11 +180,6 @@ jobs:
 
 For use this action, we must set up on [Github Encrypted Secrets](https://docs.github.com/en/enterprise-cloud@latest/actions/security-guides/encrypted-secrets) the ```AWS_ACCESS_KEY```, ```AWS_SECRET_KEY``` and ```AWS_REGION```for [AWS Provider](https://www.packer.io/plugins/builders/amazon#environment-variables). On Aditional, if you'll use [Consul KV](https://www.consul.io/commands#environment-variables), we must set up ```CONSUL_HTTP_ADDR```and ```CONSUL_HTTP_TOKEN```for [Consul Contextual Function](https://www.packer.io/docs/templates/hcl_templates/functions/contextual/consul). Finally, we must set up [HCP Packer Service Principal](https://cloud.hashicorp.com/docs/hcp/admin/service-principals) ```HCP_CLIENT_ID``` and ```HCP_CLIENT_SECRET```
 
-<p align="center" style="text-align:center;">
-    <img alt="hcp-packer-aws-action" src="img/hcp-packer-aws-action.png" width="500"/>
-  </a>
-</p>
-
 ## HCP Packer with AWS 
 
 Packer supports building Virtual Hard Disks (VHDs) and Managed Images in [Azure Resource Manager](https://azure.microsoft.com/en-us/documentation/articles/resource-group-overview/). Azure provides new users a [$200 credit for the first 30 days](https://azure.microsoft.com/en-us/free/); after which you will incur costs for VMs built and stored using Packer.
@@ -318,7 +313,13 @@ jobs:
 
 For use this action, we must set up on [Github Encrypted Secrets](https://docs.github.com/en/enterprise-cloud@latest/actions/security-guides/encrypted-secrets) the ```AZURE_SUBSCRIPTION_ID```, ```AZURE_TENANT_ID```, ```AZURE_CLIENT_ID``` and ```AZURE_CLIENT_SECRET``` for [Azure Provider](https://www.packer.io/plugins/builders/azure#azure-active-directory-service-principal). On Aditional, if you'll use [Consul KV](https://www.consul.io/commands#environment-variables), we must set up ```CONSUL_HTTP_ADDR```and ```CONSUL_HTTP_TOKEN```for [Consul Contextual Function](https://www.packer.io/docs/templates/hcl_templates/functions/contextual/consul). Finally, we must set up [HCP Packer Service Principal](https://cloud.hashicorp.com/docs/hcp/admin/service-principals) ```HCP_CLIENT_ID``` and ```HCP_CLIENT_SECRET```
 
-<p align="center" style="text-align:center;">
-    <img alt="hcp-packer-aws-action" src="img/hcp-packer-action.png" width="500"/>
-  </a>
-</p>
+## Licence
+
+The scripts and documentation in this project are released under the [MIT License](./LICENSE)
+## Contributions
+
+Contributions are welcome! See [Contributor's Guide](./docs/contributors.md)
+
+## Code of Conduct
+
+👋 Be nice. See our [code of conduct](./docs/code_of_conduct.md)
