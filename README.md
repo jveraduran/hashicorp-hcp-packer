@@ -35,8 +35,17 @@ This repository, has the implementation of **HCP Packer** and **HCP Terraform** 
 
 # Code implementation
 
-AWS 
+## HCP Packer with AWS 
 
+The amazon-ebs Packer builder is able to create Amazon AMIs backed by EBS volumes for use in [EC2](https://aws.amazon.com/ec2/). For more information on the difference between EBS-backed instances and instance-store backed instances, see the ["storage for the root device" section in the EC2 documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ComponentsAMIs.html#storage-for-the-root-device).
+
+This builder builds an AMI by launching an EC2 instance from a source AMI, provisioning that running machine, and then creating an AMI from that machine. This is all done in your own AWS account. The builder will create temporary keypairs, security group rules, etc. that provide it temporary access to the instance while the image is being created. This simplifies configuration quite a bit.
+
+The builder does not manage AMIs. Once it creates an AMI and stores it in your account, it is up to you to use, delete, etc. the AMI.
+
+Aditional, we'll use de [HCP Packer Registry](https://www.packer.io/docs/templates/hcl_templates/blocks/build/hcp_packer_registry) configuration, to manage our **Image LifeCycle** and with packer the [HCL2 Templates](https://www.packer.io/guides/hcl) with **Github Actions** as **Continous Integration** and **Continuous Delivery** Tool.
+
+This is the definiton of the [HCL2](https://www.packer.io/guides/hcl) used 
 ```
 source "amazon-ebs" "ami" {
   access_key            = var.aws_access_key
@@ -76,55 +85,103 @@ Some nice description about the image being published to HCP Packer Registry.
   ]
 }
 ```
-
-AZURE
+This is the definiton of the [Github Action Workflow](./.github/workflows/packer-consul-aws.yml) used for  **Continous Integration** and **Continuous Delivery**. To include [Ansible Provisioner](https://www.packer.io/plugins/provisioners/ansible/ansible), i build a [Github Action on Marketplace](https://github.com/marketplace?type=actions) that you can use named [Packer GitHub Actions with Ansible Provisioner](https://github.com/marketplace/actions/packer-github-actions-with-ansible-provisioner) that consider [Advanced options](https://www.packer.io/docs/commands) based on ```fmt```and ```validate```. 
 
 ```
-source "azure-arm" "image" {
-  subscription_id     = var.subscription_id
-  tenant_id           = var.tenant_id
-  client_secret       = var.client_secret
-  client_id           = var.client_id
-  resource_group_name = "cl-azure-network-prod"
-  storage_account     = "hashicorpacker"
+name: Packer Consul AWS
 
-  capture_container_name = "images"
-  capture_name_prefix    = "packer"
+on:
+  push:
+    branches: [develop, staging, master]
+  pull_request: 
+    branches: [develop, staging, master]
+    types: [opened, synchronize]
 
-  os_type         = "Linux"
-  image_publisher = "Canonical"
-  image_offer     = "UbuntuServer"
-  image_sku       = "18.04-LTS"
+jobs:
+  Validate-Packer:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    name: Validate-Packer
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-  location = "East US 2"
-  vm_size  = "Standard_D2S_v3"
+      - name: Validate Template
+        uses: jveraduran/packer-github-actions@master
+        with:
+          command: validate
+          arguments: -syntax-only
+          target: aws/packer-consul.json.pkr.hcl
+  
+  Format-Packer:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    name: Format-Packer
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-  azure_tags = {
-    Name        = local.ami_name
-    Environment = var.app_env
-  }
-}
+      - name: Validate Template
+        uses: jveraduran/packer-github-actions@master
+        with:
+          command: fmt
+          target: aws/packer-consul.json.pkr.hcl
 
-build {
-  hcp_packer_registry {
-    bucket_name = "azure"
-    description = <<EOT
-Some nice description about the image being published to HCP Packer Registry.
-    EOT
-    bucket_labels = {
-      "Owner"          = "jveraduran"
-      "OS"             = "Ubuntu",
-      "Ubuntu-version" = "18.04 LTS",
-      "Environment"    = var.app_env
-    }
+  Build:
+    needs: [Validate-Packer,Format-Packer]
+    if: ${{ (github.event_name == 'push') && always() }}
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      
+      - name: Setup ENV
+        shell: bash
+        run: |-
+          if [ ${{ github.event_name }} == "pull_request" ]; then 
+            branch=$(echo ${{ github.base_ref }}  | tr / -)
+          else 
+            branch=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+          fi
+          if [ $branch = "master" ]; then 
+            env="production";
+          elif [ $branch = "develop" ]; then 
+            env="develop";
+          elif [ $branch = "staging" ]; then 
+            env="staging";
+          else 
+            echo "invalid environment"; exit -1
+          fi
+          echo "ENV=$(echo $env)" >> $GITHUB_ENV
+      
+      - name: Download Packer Plugin
+        uses: jveraduran/packer-github-actions@master
+        with:
+          command: init
+          target: aws/packer-consul.json.pkr.hcl
 
-    build_labels = {
-      "build-time"   = timestamp()
-      "build-source" = basename(path.cwd)
-    }
-  }
-  sources = [
-    "source.azure-arm.image"
-  ]
-}
+      - name: Build Artifact
+        uses: jveraduran/packer-github-actions@master
+        with:
+          command: build
+          arguments: "-color=false -on-error=abort -force -var version=${{ github.run_number }}"
+          target: aws/packer-consul.json.pkr.hcl
+        env:
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS_REGION: "us-east-1"
+          CONSUL_HTTP_ADDR: ${{ secrets.CONSUL_HTTP_ADDR }}
+          CONSUL_HTTP_TOKEN: ${{ secrets.CONSUL_HTTP_TOKEN }}
+          APP_ENV: ${{ env.ENV }}
+          HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+          HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
 ```
+
+For use this action, we must set up on [Github Encrypted Secrets](https://docs.github.com/en/enterprise-cloud@latest/actions/security-guides/encrypted-secrets) the ```AWS_ACCESS_KEY```, ```AWS_SECRET_KEY``` and ```AWS_REGION```for [AWS Provider](https://www.packer.io/plugins/builders/amazon#environment-variables). On Aditional, if you'll use [Consul KV](https://www.consul.io/commands#environment-variables), we must set up ```CONSUL_HTTP_ADDR```and ```CONSUL_HTTP_TOKEN```for [Consul Contextual Function](https://www.packer.io/docs/templates/hcl_templates/functions/contextual/consul). Finally, we must set up [HCP Packer Service Principal](https://cloud.hashicorp.com/docs/hcp/admin/service-principals) ```HCP_CLIENT_ID``` and ```HCP_CLIENT_SECRET```
+
+<p align="left" style="text-align:left;">
+  <a href="https://www.packer.io">
+    <img alt="hcp-packer-aws-action" src="img/hcp-packer-aws-action.png" width="500" />
+  </a>
+</p>
