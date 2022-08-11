@@ -42,10 +42,7 @@ variable "consul_http_token" {
 }
 # https://www.packer.io/docs/templates/hcl_templates/functions/contextual/consul
 locals {
-  ami_name      = consul_key(join("/", ["polymathes/temporal", var.app_env, "packer/ami-name"]))
-  ssh_username  = consul_key("polymathes/temporal/packer/ssh-username")
-  source_ami    = consul_key("polymathes/temporal/packer/source-ami")
-  instance_type = consul_key("polymathes/temporal/packer/instance-type")
+  project_id = consul_key(join("/", ["polymathes/temporal", var.app_env, "packer/project-id"]))
 }
 
 # source blocks are generated from your builders; a source can be referenced in
@@ -55,19 +52,14 @@ locals {
 # https://www.packer.io/plugins/builders/azure/arm
 source "googlecompute" "basic-example" {
   account_file = var.account_file
-  project_id = "my project"
-  source_image = "debian-9-stretch-v20200805"
-  ssh_username = "packer"
-  zone = "southamerica-west1-a"
+  project_id   = local.project_id
+  image_name   = "bastion"
+  machine_type = "e2-medium"
+  source_image = "ubuntu-2204-jammy-v20220810"
+  ssh_username = "ubuntu"
+  zone         = "southamerica-west1-a"
 }
 
-build {
-  sources = ["sources.googlecompute.basic-example"]
-}
-
-# a build block invokes sources and runs provisioning steps on them. The
-# documentation for build blocks can be found here:
-# https://www.packer.io/docs/templates/hcl_templates/blocks/build
 build {
   hcp_packer_registry {
     bucket_name = "gcp"
@@ -77,7 +69,7 @@ Some nice description about the image being published to HCP Packer Registry.
     bucket_labels = {
       "Owner"          = "jveraduran"
       "OS"             = "Ubuntu",
-      "Ubuntu-version" = "18.04 LTS",
+      "Ubuntu-version" = "22.04 LTS",
       "Environment"    = var.app_env
     }
 
@@ -90,3 +82,7 @@ Some nice description about the image being published to HCP Packer Registry.
     "sources.googlecompute.basic-example"
   ]
 }
+
+
+
+
