@@ -25,7 +25,7 @@ Set end of life dates for images, or set up workflows that can revoke images acr
 
 **Integrate with Terraform**
 
-Using the [HCP Provider for Terrafor](https://registry.terraform.io/providers/hashicorp/hcp/latest/docs?_gl=1*16j7m9p*_ga*MTgwMDg3ODAwMy4xNjU4NDIxOTkx*_ga_P7S46ZYEKW*MTY2MDA0NzYwMS44LjAuMTY2MDA0NzYwMS4w), the Packer data source allows your teams to codify images in your Terraform configuration files rather than hard-coding them
+Using the [HCP Provider for Terraform](https://registry.terraform.io/providers/hashicorp/hcp/latest/docs?_gl=1*16j7m9p*_ga*MTgwMDg3ODAwMy4xNjU4NDIxOTkx*_ga_P7S46ZYEKW*MTY2MDA0NzYwMS44LjAuMTY2MDA0NzYwMS4w), the Packer data source allows your teams to codify images in your Terraform configuration files rather than hard-coding them
 
 <br>
 
