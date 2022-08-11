@@ -7,6 +7,7 @@
 # Local .terraform directories
 .terraform
 **/.terraform/*
+credentials.json
 
 # Terraform lockfile
 .terraform.lock.hcl

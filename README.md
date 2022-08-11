@@ -313,6 +313,51 @@ jobs:
 
 For use this action, we must set up on [Github Encrypted Secrets](https://docs.github.com/en/enterprise-cloud@latest/actions/security-guides/encrypted-secrets) the ```AZURE_SUBSCRIPTION_ID```, ```AZURE_TENANT_ID```, ```AZURE_CLIENT_ID``` and ```AZURE_CLIENT_SECRET``` for [Azure Provider](https://www.packer.io/plugins/builders/azure#azure-active-directory-service-principal). On Aditional, if you'll use [Consul KV](https://www.consul.io/commands#environment-variables), we must set up ```CONSUL_HTTP_ADDR```and ```CONSUL_HTTP_TOKEN```for [Consul Contextual Function](https://www.packer.io/docs/templates/hcl_templates/functions/contextual/consul). Finally, we must set up [HCP Packer Service Principal](https://cloud.hashicorp.com/docs/hcp/admin/service-principals) ```HCP_CLIENT_ID``` and ```HCP_CLIENT_SECRET```
 
+## HCP Packer with GCP
+
+The googlecompute Packer builder is able to create [images](https://developers.google.com/compute/docs/images) for use with [Google Compute Engine](https://cloud.google.com/products/compute-engine) (GCE) based on existing images.
+
+It is possible to build images from scratch, but not with the googlecompute Packer builder. The process is recommended only for advanced users, please see [Building GCE Images from Scratch](https://cloud.google.com/compute/docs/tutorials/building-images) and the [Google Compute Import Post-Processor](https://www.packer.io/docs/post-processors/googlecompute-import) for more information..
+
+Aditional, we'll use de [HCP Packer Registry](https://www.packer.io/docs/templates/hcl_templates/blocks/build/hcp_packer_registry) configuration, to manage our **Image LifeCycle** and with packer the [HCL2 Templates](https://www.packer.io/guides/hcl) with **Github Actions** as **Continous Integration** and **Continuous Delivery** Tool.
+
+This is the definiton of the [HCL2](https://www.packer.io/guides/hcl) used 
+```
+source "googlecompute" "basic-example" {
+  account_file = var.account_file
+  project_id   = local.project_id
+  image_name   = "packer"
+  machine_type = "e2-medium"
+  source_image = "ubuntu-2204-jammy-v20220810"
+  ssh_username = "ubuntu"
+  zone         = "southamerica-west1-a"
+}
+
+build {
+  hcp_packer_registry {
+    bucket_name = "gcp"
+    description = <<EOT
+Some nice description about the image being published to HCP Packer Registry.
+    EOT
+    bucket_labels = {
+      "Owner"          = "jveraduran"
+      "OS"             = "Ubuntu",
+      "Ubuntu-version" = "22.04 LTS",
+      "Environment"    = var.app_env
+    }
+
+    build_labels = {
+      "build-time"   = timestamp()
+      "build-source" = basename(path.cwd)
+    }
+  }
+  sources = [
+    "sources.googlecompute.basic-example"
+  ]
+}
+```
+This is the definiton of the [Github Action Workflow](./.github/workflows/packer-consul-gcp.yml) used for  **Continous Integration** and **Continuous Delivery**. To include [Ansible Provisioner](https://www.packer.io/plugins/provisioners/ansible/ansible), i build a [Github Action on Marketplace](https://github.com/marketplace?type=actions) that you can use named [Packer GitHub Actions with Ansible Provisioner](https://github.com/marketplace/actions/packer-github-actions-with-ansible-provisioner) that consider [Advanced options](https://www.packer.io/docs/commands) based on ```fmt```and ```validate```. 
+
 ## Advantages of Using Packer
 
 **Super fast infrastructure deployment.** Packer images allow you to launch completely provisioned and configured machines in seconds, rather than several minutes or hours. This benefits not only production, but development as well, since development virtual machines can also be launched in seconds, without waiting for a typically much longer provisioning time.
@@ -324,6 +369,7 @@ For use this action, we must set up on [Github Encrypted Secrets](https://docs.g
 **Greater testability**. After a machine image is built, that machine image can be quickly launched and smoke tested to verify that things appear to be working. If they are, you can be confident that any other machines launched from that image will function properly.
 
 Packer makes it extremely easy to take advantage of all these benefits. :sunglasses:
+
 
 ## Licence
 
